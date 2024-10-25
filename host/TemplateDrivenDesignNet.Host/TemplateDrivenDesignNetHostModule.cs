@@ -56,7 +56,7 @@ public class TemplateDrivenDesignNetHostModule : AbpModule
         {
             options.OutputDateTimeFormat = "yyyy-MM-dd HH:mm:ss";
         });
-
+        
         // 跨域
         context.Services.AddCors(options =>
         {
@@ -138,5 +138,6 @@ public class TemplateDrivenDesignNetHostModule : AbpModule
 
         app.UseAuditing();
         app.UseConfiguredEndpoints();
+
     }
 }

@@ -1,4 +1,5 @@
 using Volo.Abp;
+using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Entities;
 
 namespace TemplateDrivenDesignNet.Templates;
@@ -6,7 +7,7 @@ namespace TemplateDrivenDesignNet.Templates;
 /// <summary>
 /// 模板信息
 /// </summary>
-public class Template : Entity<string>
+public class Template : Entity<string>,ICreationAuditedObject
 {
     protected Template()
     {
@@ -15,10 +16,14 @@ public class Template : Entity<string>
 
     public Template(string id, string name, string intro, string content) : base(id)
     {
-        Name = name;
-        Intro = intro;
-        Content = content;
+        ChangeName(name);
+        ChangeIntro(intro);
+        ChangeContent(content);
     }
+    
+    public DateTime CreationTime { get; protected set; }
+    
+    public Guid? CreatorId { get; protected set; }
 
     /// <summary>
     /// 模板名称

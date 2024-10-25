@@ -8,7 +8,7 @@ public class DeleteTemplateCommandHandler(ITemplateRepository templateRepository
 {
     public override async Task<bool> Handle(DeleteTemplateCommand command, CancellationToken cancellationToken)
     {
-        await templateRepository.DeleteAsync(a => a.Id == command.TemplateId);
+        await templateRepository.DeleteAsync(a => a.Id == command.TemplateId, cancellationToken: cancellationToken);
 
         return true;
     }

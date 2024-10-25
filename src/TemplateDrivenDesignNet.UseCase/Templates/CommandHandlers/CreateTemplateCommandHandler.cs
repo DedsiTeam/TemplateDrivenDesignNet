@@ -1,12 +1,17 @@
 using Dedsi.Ddd.CQRS.CommandHandlers;
+using TemplateDrivenDesignNet.Repositories.Templates;
 using TemplateDrivenDesignNet.Templates.Commands;
 
 namespace TemplateDrivenDesignNet.Templates.CommandHandlers;
 
-public class CreateTemplateCommandHandler() : DedsiCommandHandler<CreateTemplateCommand, bool>
+public class CreateTemplateCommandHandler(ITemplateRepository templateRepository) : DedsiCommandHandler<CreateTemplateCommand, bool>
 {
-    public override Task<bool> Handle(CreateTemplateCommand command, CancellationToken cancellationToken)
+    public override async Task<bool> Handle(CreateTemplateCommand command, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var template = new Template(Ulid.NewUlid().ToString(), command.Input.Name, command.Input.Intro, command.Input.Content);
+
+        await templateRepository.InsertAsync(template, cancellationToken: cancellationToken);
+        
+        return true;
     }
 }
