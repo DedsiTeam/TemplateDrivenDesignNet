@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="Dedsi.CleanArchitecture.Infrastructure" Version="$(DedsiFrameworkVersion)" />
+        <PackageReference Include="Dedsi.SqlSugar" Version="$(DedsiFrameworkVersion)" />
     </ItemGroup>
 
 </Project>

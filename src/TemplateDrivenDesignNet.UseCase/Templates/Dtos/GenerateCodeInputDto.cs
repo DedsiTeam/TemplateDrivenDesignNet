@@ -13,4 +13,9 @@ public class GenerateCodeInputDto
     /// 
     /// </summary>
     public TableInfoResultDto TableInfo { get; set; }
+    
+    /// <summary>
+    /// 模板中所需参数
+    /// </summary>
+    public Dictionary<string,Object> TemplateDatas  { get; set; }
 }

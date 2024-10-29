@@ -17,6 +17,16 @@ public class GenerateCodeCommandHandler(ITemplateRepository templateRepository) 
 
         var dbTableFieldInfoCSharpData = await DbTableFieldToCSharpAsync(command.TableFieldInfos);
         template.Set("TableFieldInfos", dbTableFieldInfoCSharpData);
+        
+        // 组装出构造函数所需的文本
+        template.Set("ConstructorRequirement", string.Join(",",dbTableFieldInfoCSharpData.Select(a => $"{a.CSharpDataType} {a.HumpFieldName}")));
+
+            
+        foreach (var item in command.TemplateDatas)
+        {
+            template.Set(item.Key, item.Value);
+        }
+
         var render = await template.RenderAsync();
         
         return new GenerateCodeCommandResultDto(command.TemplateId,render);
@@ -30,18 +40,48 @@ public class GenerateCodeCommandHandler(ITemplateRepository templateRepository) 
     private ValueTask<List<DbTableFieldInfoCSharpDto>> DbTableFieldToCSharpAsync(List<DbTableFieldInfoDto> tableFieldInfos)
     {
         var list = tableFieldInfos
-            .Select(a => new DbTableFieldInfoCSharpDto()
+            .Select(a =>
             {
-                FieldName = a.FieldName,
-                CSharpDataType = SqlToCSharpTypeMapper.GetCSharpType(a.DataType),
-                IsNullable = a.IsNullable,
-                FieldChinese = a.FieldChinese
+                var fieldName = GetFieldName(a.FieldName);
+                return new DbTableFieldInfoCSharpDto()
+                {
+                    FieldName = fieldName,
+                    HumpFieldName = ToLowerCamelCase(fieldName),
+                    CSharpDataType = SqlToCSharpTypeMapper.GetCSharpType(a.DataType),
+                    TsDataType = SqlToTsTypeMapper.GetTsType(a.DataType),
+                    IsNullable = a.IsNullable,
+                    FieldChinese = a.FieldChinese
+                };
             })
             .ToList();
         
         return ValueTask.FromResult(list);
     }
     
+    /// <summary>
+    /// 小驼峰
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    private string ToLowerCamelCase(string input)
+    {
+        if (string.IsNullOrEmpty(input) || char.IsLower(input[0]))
+        {
+            return input;
+        }
+ 
+        return char.ToLowerInvariant(input[0]) + input.Substring(1);
+    }
+
+    /// <summary>
+    /// 对于字段名字的操作
+    /// </summary>
+    /// <param name="fieldName"></param>
+    /// <returns></returns>
+    private string GetFieldName(string fieldName)
+    {
+        return fieldName.Replace("_", "").Replace("-", "");
+    }
 }
 
 
@@ -56,9 +96,19 @@ public class DbTableFieldInfoCSharpDto
     public string FieldName { get; set; }
     
     /// <summary>
+    /// 小驼峰：字段名称
+    /// </summary>
+    public string HumpFieldName { get; set; }
+    
+    /// <summary>
     /// 数据类型
     /// </summary>
     public string CSharpDataType { get; set; }
+    
+    /// <summary>
+    /// Ts 类型
+    /// </summary>
+    public string TsDataType { get; set; }
     
     /// <summary>
     /// 可为空

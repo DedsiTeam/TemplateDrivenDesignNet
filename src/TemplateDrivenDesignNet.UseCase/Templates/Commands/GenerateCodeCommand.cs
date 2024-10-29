@@ -1,4 +1,5 @@
 using Dedsi.Ddd.CQRS.Commands;
+using FluentValidation;
 using TemplateDrivenDesignNet.DbTableInfos.Dtos;
 
 namespace TemplateDrivenDesignNet.Templates.Commands;
@@ -8,7 +9,11 @@ namespace TemplateDrivenDesignNet.Templates.Commands;
 /// </summary>
 /// <param name="TemplateId"></param>
 /// <param name="TableFieldInfos">数据库表信息</param>
-public record GenerateCodeCommand(string TemplateId,List<DbTableFieldInfoDto> TableFieldInfos) : DedsiCommand<GenerateCodeCommandResultDto>;
+/// <param name="TemplateDatas">模板中所需参数</param>
+public record GenerateCodeCommand(string TemplateId,
+    List<DbTableFieldInfoDto> TableFieldInfos,
+    Dictionary<string,Object> TemplateDatas) 
+    : DedsiCommand<GenerateCodeCommandResultDto>;
 
 /// <summary>
 /// 命令的结果

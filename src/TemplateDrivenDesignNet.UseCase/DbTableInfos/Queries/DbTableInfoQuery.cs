@@ -1,6 +1,8 @@
 using Dedsi.Ddd.Domain.Queries;
 using Dedsi.EntityFrameworkCore.Queries;
+using Dedsi.SqlSugar.Queries;
 using Microsoft.EntityFrameworkCore;
+using SqlSugar;
 using TemplateDrivenDesignNet.DbTableInfos.Dtos;
 using TemplateDrivenDesignNet.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -23,14 +25,13 @@ public interface IDbTableInfoQuery : IDedsiQuery
     Task<List<DbTableFieldInfoDto>> GetTableFieldInfoAsync(TableInfoResultDto input);
 }
 
-public class DbTableInfoQuery(IDbContextProvider<TemplateDrivenDesignNetDbContext> dbContextProvider)
-    : DedsiEfCoreQuery<TemplateDrivenDesignNetDbContext>(dbContextProvider), IDbTableInfoQuery
+public class DbTableInfoQuery(ISqlSugarClient sqlSugarClient): DedsiSqlSugarQuery(sqlSugarClient), IDbTableInfoQuery
 {
     /// <summary>
     /// 获得数据库表信息
     /// </summary>
     /// <returns></returns>
-    public async Task<List<TableInfoResultDto>> GetTableInfoAsync()
+    public Task<List<TableInfoResultDto>> GetTableInfoAsync()
     {
         var sql = @"SELECT
                         OBJECT_NAME(t.object_id) AS 'TableName',
@@ -41,11 +42,10 @@ public class DbTableInfoQuery(IDbContextProvider<TemplateDrivenDesignNetDbContex
                     WHERE t.type = 'U'
                     ORDER BY TableName";
 
-        var dbContext = await GetDbContextAsync();
-        return await dbContext.Database.SqlQueryRaw<TableInfoResultDto>(sql).ToListAsync();
+        return GetListAsync<TableInfoResultDto>(sql);
     }
 
-    public async Task<List<DbTableFieldInfoDto>> GetTableFieldInfoAsync(TableInfoResultDto input)
+    public Task<List<DbTableFieldInfoDto>> GetTableFieldInfoAsync(TableInfoResultDto input)
     {
         var sql = $@"SELECT
                     c.name as 'FieldName',
@@ -56,10 +56,9 @@ public class DbTableInfoQuery(IDbContextProvider<TemplateDrivenDesignNetDbContex
                 FROM sys.columns as c
                 INNER JOIN sys.types as t ON c.system_type_id = t.system_type_id
                 LEFT JOIN sys.extended_properties as p ON c.object_id = p.major_id AND c.column_id = p.minor_id
-                WHERE c.object_id = OBJECT_ID('{input.SchemaName}.{input.TableName}')
+                WHERE c.object_id = OBJECT_ID('{input.SchemaName}.{input.TableName}') and t.name != 'sysname'
                 ORDER BY c.column_id";
         
-        var dbContext = await GetDbContextAsync();
-        return await dbContext.Database.SqlQueryRaw<DbTableFieldInfoDto>(sql).ToListAsync();
+        return GetListAsync<DbTableFieldInfoDto>(sql);
     }
 }

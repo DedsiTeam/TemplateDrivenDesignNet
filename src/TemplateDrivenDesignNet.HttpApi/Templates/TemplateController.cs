@@ -27,9 +27,17 @@ public class TemplateController(
     [HttpPost]
     public async Task<GenerateCodeCommandResultDto> GenerateCodeAsync(GenerateCodeInputDto input)
     {
+        // NameSpace 必须要有
+        if (input.TemplateDatas.ContainsKey("NameSpace") == false)
+        {
+            input.TemplateDatas.Add("NameSpace", "");
+        }
+        
         var tableFieldInfos = await dbTableInfoQuery.GetTableFieldInfoAsync(input.TableInfo);
         
-        var command = new GenerateCodeCommand(input.TemplateId, tableFieldInfos);
+        var command = new GenerateCodeCommand(input.TemplateId, tableFieldInfos, input.TemplateDatas);
+        command.TemplateDatas.Add("EntityName",input.TableInfo.TableName);
+        command.TemplateDatas.Add("EntityNameDescription",input.TableInfo.Description);
         
         return await dedsiMediator.PublishAsync(command);
     }
