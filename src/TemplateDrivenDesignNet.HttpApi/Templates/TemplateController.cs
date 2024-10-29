@@ -43,6 +43,16 @@ public class TemplateController(
     }
 
     /// <summary>
+    /// 模板下拉框数据源
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public Task<List<TemplateSelectDto>> GetTemplateSelectListAsync()
+    {
+        return templateQuery.GetTemplateSelectListAsync();
+    }
+
+    /// <summary>
     /// 创建
     /// </summary>
     /// <param name="input"></param>

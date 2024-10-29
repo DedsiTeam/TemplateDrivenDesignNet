@@ -11,6 +11,12 @@ namespace TemplateDrivenDesignNet.Templates.Queries;
 public interface ITemplateQuery : IDedsiEfCoreQuery
 {
     Task<TemplateDto> GetAsync(string templateId);
+    
+    /// <summary>
+    /// 模板下拉框数据源
+    /// </summary>
+    /// <returns></returns>
+    Task<List<TemplateSelectDto>> GetTemplateSelectListAsync();
 }
 
 public class TemplateQuery(IDbContextProvider<TemplateDrivenDesignNetDbContext> dbContextProvider)
@@ -22,5 +28,11 @@ public class TemplateQuery(IDbContextProvider<TemplateDrivenDesignNetDbContext> 
         var template = await GetAsync<Template, string>(templateId);
 
         return template.Adapt<TemplateDto>();
+    }
+
+    public async Task<List<TemplateSelectDto>> GetTemplateSelectListAsync()
+    {
+        var dbaContext = await GetDbContextAsync();
+        return await dbaContext.Templates.OrderByDescending(a => a.CreationTime).Select(a => new TemplateSelectDto(a.Id,a.Name)).ToListAsync();
     }
 }
