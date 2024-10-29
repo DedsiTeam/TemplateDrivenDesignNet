@@ -68,7 +68,7 @@ public class DbTableFieldInfoCSharpDto
     /// <summary>
     /// 字段说明
     /// </summary>
-    public string FieldChinese { get; set; }
+    public string? FieldChinese { get; set; }
 }
 
 public class SqlToCSharpTypeMapper

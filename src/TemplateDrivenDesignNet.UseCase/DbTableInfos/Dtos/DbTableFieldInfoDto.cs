@@ -11,5 +11,5 @@ public class DbTableFieldInfoDto
     
     public bool IsNullable { get; set; }
     
-    public string FieldChinese { get; set; }
+    public string? FieldChinese { get; set; }
 }
