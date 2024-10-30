@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace TemplateDrivenDesignNet.Templates.Dtos;
 
 public class CreateUpdateTemplateInputDto
@@ -16,4 +18,9 @@ public class CreateUpdateTemplateInputDto
     /// 模板内容
     /// </summary>
     public string Content { get; set; }
+    
+    /// <summary>
+    /// 模板入参
+    /// </summary>
+    public List<string> TemplateInParameters { get; set; }
 }

@@ -14,6 +14,8 @@ public class UpdateTemplateCommandHandler(ITemplateRepository templateRepository
         template.ChangeIntro(command.Input.Intro);
         template.ChangeContent(command.Input.Content);
         
+        template.ClearAndTemplateInParameters(command.Input.TemplateInParameters);
+        
         await templateRepository.UpdateAsync(template, cancellationToken: cancellationToken);
 
         return true;

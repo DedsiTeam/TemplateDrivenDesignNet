@@ -33,6 +33,12 @@ public class TemplateQuery(IDbContextProvider<TemplateDrivenDesignNetDbContext> 
     public async Task<List<TemplateSelectDto>> GetTemplateSelectListAsync()
     {
         var dbaContext = await GetDbContextAsync();
-        return await dbaContext.Templates.OrderByDescending(a => a.CreationTime).Select(a => new TemplateSelectDto(a.Id,a.Name)).ToListAsync();
+        return await dbaContext
+            .Templates
+            .OrderByDescending(a => a.CreationTime).Select(a => new TemplateSelectDto(a.Id,a.Name)
+            {
+                TemplateInParameters = a.TemplateInParameters
+            })
+            .ToListAsync();
     }
 }

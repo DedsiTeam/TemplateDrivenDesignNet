@@ -54,4 +54,46 @@ public class Template : Entity<string>,ICreationAuditedObject
     {
         Content = Check.NotNullOrWhiteSpace(newContent, nameof(newContent));
     }
+    
+    /// <summary>
+    /// 模板入参
+    /// </summary>
+    public List<string> TemplateInParameters { get; private set; } = new();
+
+    public void AddTemplateInParameter(string templateInParameter)
+    {
+        if (TemplateInParameters.Any(a => a == templateInParameter))
+        {
+            throw new UserFriendlyException( templateInParameter + ": 已存在！");
+        }
+        TemplateInParameters.Add(templateInParameter);
+    }
+    
+    public void AddTemplateInParameters(List<string> templateInParameters)
+    {
+        foreach (var templateInParameter in templateInParameters)
+        {
+            AddTemplateInParameter(templateInParameter);
+        }
+    }
+
+    public void RemoveTemplateInParameters(string templateInParameter)
+    {
+        TemplateInParameters.Remove(templateInParameter);
+    }
+
+    public void ClearTemplateInParameters()
+    {
+        TemplateInParameters.Clear();
+    }
+    
+    /// <summary>
+    /// 清除后全部添加
+    /// </summary>
+    public void ClearAndTemplateInParameters(List<string> templateInParameters)
+    {
+        ClearTemplateInParameters();
+        TemplateInParameters = templateInParameters;
+    }
+
 }

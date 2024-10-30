@@ -10,6 +10,8 @@ public class CreateTemplateCommandHandler(ITemplateRepository templateRepository
     {
         var template = new Template(Ulid.NewUlid().ToString(), command.Input.Name, command.Input.Intro, command.Input.Content);
 
+        template.AddTemplateInParameters(command.Input.TemplateInParameters);
+        
         await templateRepository.InsertAsync(template, cancellationToken: cancellationToken);
         
         return true;
